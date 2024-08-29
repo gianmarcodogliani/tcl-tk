@@ -21,7 +21,7 @@ namespace eval gui_utils {
     proc setup_toplevel {} {
         ::ttk::setTheme alt
         toplevel .w   ;# Window Widget
-        wm iconphoto .w -default [logo_utils::create_git_logo]   ;# From gitlogo.tcl
+        #wm iconphoto .w -default [logo_utils::create_git_logo]   ;# From gitlogo.tcl
         wm title .w "progressbar"
         wm geometry .w 280x110   ;# Aspect Ratio definition
         wm protocol .w WM_DELETE_WINDOW { exit }   ;# Quit app when user press "X"
