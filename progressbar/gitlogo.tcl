@@ -1,6 +1,6 @@
 namespace eval logo_utils {
     proc create_git_logo {} {
-            image create photo gitlogo -data {
+            image create photo gitLogo -data {
             iVBORw0KGgoAAAANSUhEUgAAAgAAAAI
             ACAMAAADDpiTIAAAAA3NCSVQICAjb4U
             /gAAAACXBIWXMAABApAAAQKQH1eOIPA
@@ -373,6 +373,6 @@ namespace eval logo_utils {
             ImTu7jZz50YwJL90eD1eJbfHi+BkfzR
             zZ7c4y0DRN0zRN0zRNc7H/B5My2wke0
             lCHAAAAAElFTkSuQmCC}
-        return gitlogo
+        return gitLogo
     }
 }

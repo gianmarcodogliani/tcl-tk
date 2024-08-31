@@ -1,3 +1,11 @@
+# progressbar.tcl
+# Tcl-Tk app setting up a progressbar that dynamically updates as the
+# user presses a button. When the progress bar is loaded to its 100%,
+# a message box pops up. Pressing OK exits the application.
+# 
+# Compatible with Windows/Mac/Linux operating systems. On Windows, the
+# application uses git logo as icon photo.
+#
 package require Tk
 source gitlogo.tcl
 
@@ -21,7 +29,10 @@ namespace eval gui_utils {
     proc setup_toplevel {} {
         ::ttk::setTheme alt
         toplevel .w   ;# Window Widget
-        #wm iconphoto .w -default [logo_utils::create_git_logo]   ;# From gitlogo.tcl
+        if {[regexp {Windows(.*)} $::tcl_platform(os)]} {
+            # Windows OS
+            wm iconphoto .w -default [logo_utils::create_git_logo]   ;# From gitlogo.tcl
+        }
         wm title .w "progressbar"
         wm geometry .w 280x110   ;# Aspect Ratio definition
         wm protocol .w WM_DELETE_WINDOW { exit }   ;# Quit app when user press "X"
