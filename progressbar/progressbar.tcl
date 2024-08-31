@@ -4,7 +4,7 @@
 # a message box pops up. Pressing OK exits the application.
 # 
 # Compatible with Windows/Mac/Linux operating systems. On Windows, the
-# application uses git logo as icon photo.
+# application uses GitHub logo as window icon photo.
 #
 package require Tk
 source gitlogo.tcl
@@ -27,7 +27,7 @@ namespace eval gp_utils {
 
 namespace eval gui_utils {
     proc setup_toplevel {} {
-        ::ttk::setTheme alt
+        ttk::setTheme alt
         toplevel .w   ;# Window Widget
         if {[regexp {Windows(.*)} $::tcl_platform(os)]} {
             # Windows OS
