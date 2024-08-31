@@ -1,11 +1,18 @@
-package require dde   ;# Dynamic Data Exchange
+#package require dde   ;# Dynamic Data Exchange
 package require Tk    ;# GUI Widgets ToolKit
 
 namespace eval gp_utils {
     proc startup {} {
-        eval exec >&@stdout <@stdin [auto_execok cls]   ;# Clear the Screen before starting 
-        puts "\[info\]:  Running [info nameofexecutable] \[Version $::tcl_patchLevel\]"
-        puts "\[info\]:  Executing [pwd]/$::argv0 \[pid [pid]\] on $::tcl_platform(os) OS\n"
+        # Clear the Screen before starting
+        if {[regexp {Windows(.*)} $::tcl_platform(os)]} {
+            # Windows OS
+            eval exec >&@stdout <@stdin [auto_execok cls]   
+        } else {
+            # Unix OS
+            exec clear >@ stdout
+        } 
+        puts "\[info\]: Running [info nameofexecutable] \[Version $::tcl_patchLevel\]"
+        puts "\[info\]: Executing [pwd]/$::argv0 \[pid [pid]\] on $::tcl_platform(os) OS\n"
         return
     }
 }
@@ -122,30 +129,37 @@ proc main {} {
     set tStart [clock clicks]   ;# To keep track of execution time
     wm withdraw .   ;# Close master window (.)
     gp_utils::startup   ;# Display startup information
-    if {$::argc != 1} {   ;# argc holds no of cl arguments
-        # Wrong no of cl arguments
-        puts "\[error\]: Expecting $::argv0 \-fileName.xlsx"
-        exit
-    } else {
-        # Received exatcly 1 arg, proceed
-        if {[regexp {(.*).xlsx} [lindex $::argv 0] fullMatch fileName]} {   ;# Check file extension, must be .xlsx
-            # Input file is an xlsx file, proceed
-            set retList [xlsx_utils::read_xlsx_file [string range [lindex $::argv 0] 1 end]]   ;# Remove hypen (-) char from cl arg
-            set pageList [lindex $retList 0]
-            set pageContentPerColumns [lindex $retList 1]
-            # User Code Section begins here
-            #
-            # Do your processing on pageContentPerColumns
-            #
-            # User Code Section ends here
-            set tStop [clock clicks]   ;# To keep track of execution time
-            puts "\[info\]:  Terminating succesfully in [format %.2f [expr ($tStop - $tStart)*1e-6]] seconds"   ;# Clock Clicks are in us
+    if {[regexp {Windows(.*)} $::tcl_platform(os)]} {
+        # Windows OS
+        if {$::argc != 1} {   ;# argc holds no of cl arguments
+            # Wrong no of cl arguments
+            puts "\[error\]: Expecting $::argv0 \-fileName.xlsx"
             exit
         } else {
-            # Input file is not an xlsx file
-            puts "\[error\]: Expecting an .xlsx file"
-            exit   
+            # Received exatcly 1 arg, proceed
+            if {[regexp {(.*).xlsx} [lindex $::argv 0] fullMatch fileName]} {   ;# Check file extension, must be .xlsx
+                # Input file is an xlsx file, proceed
+                set retList [xlsx_utils::read_xlsx_file [string range [lindex $::argv 0] 1 end]]   ;# Remove hypen (-) char from cl arg
+                set pageList [lindex $retList 0]
+                set pageContentPerColumns [lindex $retList 1]
+                # User Code Section begins here
+                #
+                # Do your processing on pageContentPerColumns
+                #
+                # User Code Section ends here
+                set tStop [clock clicks]   ;# To keep track of execution time
+                puts "\[info\]:  Terminating succesfully in [format %.2f [expr ($tStop - $tStart)*1e-6]] seconds"   ;# Clock Clicks are in us
+                exit
+            } else {
+                # Input file is not an xlsx file
+                puts "\[error\]: Expecting an .xlsx file"
+                exit   
+            }
         }
+    } else {
+        # Unix OS
+        puts "\[error\]: Expecting Windows OS"
+        exit   
     }
 }
 
