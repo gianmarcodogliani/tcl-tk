@@ -1,4 +1,4 @@
-#package require dde   ;# Dynamic Data Exchange
+package require dde   ;# Dynamic Data Exchange
 package require Tk    ;# GUI Widgets ToolKit
 
 namespace eval gp_utils {
@@ -99,21 +99,26 @@ namespace eval xlsx_utils {
     proc read_xlsx_file {fileName} {
         if {[file exists $fileName]} {
             # fileName.xlsx has been found, proceed
-            exec cmd.exe /e /r start excel [file native $fileName]   ;# Open fileName.xlsx with Excel using Windows cmd Prompt
-            after 1000   ;# To be tuned accordingly
-            set w [gui_utils::setup_pbar]   ;# Setup progressbar to keep user informed
-            # To get list of raw page names --> eval "dde request -binary Excel System {Topics}"
-            set pageList [xlsx_utils::get_xlsx_page_names [eval "dde request -binary Excel System {Topics}"]]   ;# List of raw, tabbed (\t) page names          
-            foreach page $pageList {   ;# Iterate on exact page names
-                set pageContentPerColumns [lappend pageContentPerColumns [xlsx_utils::read_xlsx_file_pages $page]]   ;# Get page content
+            if {![catch {exec cmd.exe /e /r start excel [file native $fileName]}]} {   ;# Open fileName.xlsx with Excel using Windows cmd Prompt
+                after 1000   ;# To be tuned accordingly
+                set w [gui_utils::setup_pbar]   ;# Setup progressbar to keep user informed
+                # To get list of raw page names --> eval "dde request -binary Excel System {Topics}"
+                set pageList [xlsx_utils::get_xlsx_page_names [eval "dde request -binary Excel System {Topics}"]]   ;# List of raw, tabbed (\t) page names          
+                foreach page $pageList {   ;# Iterate on exact page names
+                    set pageContentPerColumns [lappend pageContentPerColumns [xlsx_utils::read_xlsx_file_pages $page]]   ;# Get page content
+                }
+                # To close Excel file --> eval "dde execute Excel System {[CLOSE(FALSE)]}"
+                eval "dde execute Excel System {\[CLOSE(FALSE)\]}"
+                sys_utils::kill_proc "EXCEL.EXE"   ;# Close Excel process
+                destroy $w   ;# Destroy progressbar
+                set retList [lappend retList $pageList]      ;# Prepare return list
+                set retList [lappend retList $pageContentPerColumns]   ;# Prepare return list
+                return $retList
+            } else {
+                # Excel application not found
+                puts "\[error\]: EXCEL.EXE not found"
+                exit
             }
-            # To close Excel file --> eval "dde execute Excel System {[CLOSE(FALSE)]}"
-            eval "dde execute Excel System {\[CLOSE(FALSE)\]}"
-            sys_utils::kill_proc "EXCEL.EXE"   ;# Close Excel process
-            destroy $w   ;# Destroy progressbar
-            set retList [lappend retList $pageList]      ;# Prepare return list
-            set retList [lappend retList $pageContentPerColumns]   ;# Prepare return list
-            return $retList
         } else {
             # fileName.xlsx cannot be found inside current working directory
             puts "\[error\]: Cannot find $fileName in [pwd]"
