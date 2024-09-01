@@ -11,8 +11,8 @@ namespace eval gp_utils {
             # Unix OS
             exec clear >@ stdout
         } 
-        puts "\[info\]: Running [info nameofexecutable] \[Version $::tcl_patchLevel\]"
-        puts "\[info\]: Executing [pwd]/$::argv0 \[pid [pid]\] on $::tcl_platform(os) OS\n"
+        puts "\[info\]:  Running [info nameofexecutable] \[Version $::tcl_patchLevel\]"
+        puts "\[info\]:  Executing [pwd]/$::argv0 \[pid [pid]\] on $::tcl_platform(os) OS\n"
         return
     }
 }
@@ -100,7 +100,7 @@ namespace eval xlsx_utils {
         if {[file exists $fileName]} {
             # fileName.xlsx has been found, proceed
             if {![catch {exec cmd.exe /e /r start excel [file native $fileName]}]} {   ;# Open fileName.xlsx with Excel using Windows cmd Prompt
-                after 1000   ;# To be tuned accordingly
+                after 1000   ;# Wait for 1s before sending dde commands
                 set w [gui_utils::setup_pbar]   ;# Setup progressbar to keep user informed
                 # To get list of raw page names --> eval "dde request -binary Excel System {Topics}"
                 set pageList [xlsx_utils::get_xlsx_page_names [eval "dde request -binary Excel System {Topics}"]]   ;# List of raw, tabbed (\t) page names          
@@ -142,23 +142,29 @@ proc main {} {
             exit
         } else {
             # Received exatcly 1 arg, proceed
-            if {[regexp {(.*).xlsx} [lindex $::argv 0] fullMatch fileName]} {   ;# Check file extension, must be .xlsx
-                # Input file is an xlsx file, proceed
-                set retList [xlsx_utils::read_xlsx_file [string range [lindex $::argv 0] 1 end]]   ;# Remove hypen (-) char from cl arg
-                set pageList [lindex $retList 0]
-                set pageContentPerColumns [lindex $retList 1]
-                # User Code Section begins here
-                #
-                # Do your processing on pageContentPerColumns
-                #
-                # User Code Section ends here
-                set tStop [clock clicks]   ;# To keep track of execution time
-                puts "\[info\]:  Terminating succesfully in [format %.2f [expr ($tStop - $tStart)*1e-6]] seconds"   ;# Clock Clicks are in us
-                exit
+            if {[regexp {\-(.*)} [lindex $::argv 0]]} {
+                if {[regexp {(.*).xlsx} [lindex $::argv 0] fullMatch fileName]} {   ;# Check file extension, must be .xlsx
+                    # Input file is an xlsx file, proceed
+                    set retList [xlsx_utils::read_xlsx_file [string range [lindex $::argv 0] 1 end]]   ;# Remove hypen (-) char from cl arg
+                    set pageList [lindex $retList 0]
+                    set pageContentPerColumns [lindex $retList 1]
+                    # User Code Section begins here
+                    #
+                    # Do your processing on pageContentPerColumns
+                    #
+                    # User Code Section ends here
+                    set tStop [clock clicks]   ;# To keep track of execution time
+                    puts "\[info\]:  Terminating succesfully in [format %.2f [expr ($tStop - $tStart)*1e-6]] seconds"   ;# Clock Clicks are in us
+                    exit
+                } else {
+                    # Input file is not an xlsx file
+                    puts "\[error\]: Expecting an .xlsx file"
+                    exit   
+                }
             } else {
-                # Input file is not an xlsx file
-                puts "\[error\]: Expecting an .xlsx file"
-                exit   
+                # Cl arg does not contain hypen (-)
+                puts "\[error\]: Missing hypen \(-\) in \-fileName.xlsx"
+                exit
             }
         }
     } else {
