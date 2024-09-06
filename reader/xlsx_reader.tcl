@@ -1,3 +1,11 @@
+# xlsx_reader.tcl
+# Tcl-Tk app reading an Excel .xlsx file and dynamically updating an
+# indeterminate progressbar to keep user informed about the process.
+# The .xlsx file name must be passed as a command line argument, i.e.
+# tclsh xlsx_reader.tcl -testFile.xlsx.
+# 
+# Compatible with Windows operating systems only.
+#
 package require dde   ;# Dynamic Data Exchange
 package require Tk    ;# GUI Widgets ToolKit
 
@@ -44,10 +52,12 @@ namespace eval gui_utils {
     proc setup_pbar {} {
         toplevel .w   ;# Window Widget
         wm title .w "xlsx Reader"
-        wm geometry .w 250x75   ;# Aspect Ratio definition
+        wm geometry .w 250x85   ;# Aspect Ratio definition
         ttk::progressbar .w.pb -orient horizontal -mode indeterminate \
             -length 200 -variable gui_utils::progress -value 0   ;# *scope resolution gui_utils::progress*
         pack .w.pb -pady 20   ;# Shift 20 pixels down
+        ttk::label .w.l -textvariable gui_utils::text
+        pack .w.l
         return .w
     }
     proc update_pbar {} {
@@ -105,6 +115,7 @@ namespace eval xlsx_utils {
                 # To get list of raw page names --> eval "dde request -binary Excel System {Topics}"
                 set pageList [xlsx_utils::get_xlsx_page_names [eval "dde request -binary Excel System {Topics}"]]   ;# List of raw, tabbed (\t) page names          
                 foreach page $pageList {   ;# Iterate on exact page names
+                    set gui_utils::text "Reading $page"
                     set pageContentPerColumns [lappend pageContentPerColumns [xlsx_utils::read_xlsx_file_pages $page]]   ;# Get page content
                 }
                 # To close Excel file --> eval "dde execute Excel System {[CLOSE(FALSE)]}"
@@ -163,7 +174,7 @@ proc main {} {
                 }
             } else {
                 # Cl arg does not contain hypen (-)
-                puts "\[error\]: Missing hypen \(-\) in \-fileName.xlsx"
+                puts "\[error\]: Missing hypen \(\-\) in \-fileName.xlsx"
                 exit
             }
         }
