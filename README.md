@@ -8,3 +8,5 @@ progressbar/progressbar.tcl : sets up a determinate ttk::progressbar that update
 reader/xlsx_reader.tcl : reads an Excel file and keeps the usr informed via an indeterminate ttk::progressbar.
 
 menubar/menubar.tcl : sets up a menubar and journals usr commands in a textarea.
+
+canvas/canvas.tcl : prints an ecg sample waveform in a canvas.
