@@ -2,6 +2,7 @@
 This GitHub Repository contains ready-to-use applications to test different Tcl-Tk functionalities.
 
 orcap-extensions/*.tcl : applications for Cadence OrCAD Capture.
+orpre-extensions/*.tcl : applications for Cadence OrCAD X Presto.
 
 progressbar/progressbar.tcl : sets up a determinate ttk::progressbar that updates as the usr presses a ttk::button. 
 
