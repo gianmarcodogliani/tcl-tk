@@ -12,3 +12,5 @@ reader/xlsx_reader.tcl : reads an Excel file and keeps the usr informed via an i
 menubar/menubar.tcl : sets up a menubar and journals usr commands in a textarea.
 
 canvas/canvas.tcl : prints an ecg sample waveform in a canvas.
+
+pspice-nogui/pspiceng.tcl : run pspice simulation in batch mode. 
