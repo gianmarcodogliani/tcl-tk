@@ -13,4 +13,4 @@ menubar/menubar.tcl : sets up a menubar and journals usr commands in a textarea.
 
 canvas/canvas.tcl : prints an ecg sample waveform in a canvas.
 
-pspice-nogui/pspiceng.tcl : run pspice simulation in batch mode. 
+pspice-nogui/pspiceng.tcl : runs pspice simulation in batch mode. 
