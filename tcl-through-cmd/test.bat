@@ -1,1 +1,0 @@
-start /min cmd /c "tclsh [path].tcl"
